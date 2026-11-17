@@ -274,6 +274,14 @@ void SettingsActivity::activateIndex(const int index) {
 void SettingsActivity::applyUiSettingChange(uint8_t CrossPointSettings::* valuePtr) {
   // Theme changes take effect immediately, on this screen — reload the theme
   // and re-derive the app's tokens so the very next repaint is in the new look.
+  if (valuePtr == &CrossPointSettings::uiUseReaderFont) {
+    {
+      RenderLock lock;  // font loading must not race the render task
+      sdFontSystem.refreshUiFallbacks(renderer);
+    }
+    resetUi();
+    return;
+  }
   if (valuePtr != &CrossPointSettings::uiTheme) {
     return;
   }

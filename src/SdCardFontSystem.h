@@ -61,6 +61,11 @@ class SdCardFontSystem {
     }
   }
 
+  // Apply SETTINGS.uiUseReaderFont: toggles "UI text always uses the SD font"
+  // and makes sure the UI-size fonts are loaded when it is on. Caller holds
+  // the RenderLock. No-op for the built-in family.
+  void refreshUiFallbacks(GfxRenderer& renderer);
+
  private:
   // Load the active SD family at the built-in UI point sizes and register each
   // as a size-matched script fallback for the corresponding UI font, so book

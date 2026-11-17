@@ -215,7 +215,20 @@ void SdCardFontSystem::ensureLoaded(GfxRenderer& renderer) {
   }
 }
 
+void SdCardFontSystem::refreshUiFallbacks(GfxRenderer& renderer) {
+  renderer.setUiFallbackAlways(SETTINGS.uiUseReaderFont != 0);
+  if (!SETTINGS.uiUseReaderFont) return;
+#if CROSSPOINT_VECTOR_FONTS
+  if (!ttfFamily_.empty()) {
+    if (ttfUi_.empty()) setupTtfUiFallbacks(renderer);  // not safe to repeat: it would reload the sizes
+    return;
+  }
+#endif
+  if (!manager_.currentFamilyName().empty()) setupUiFallbacks(renderer);
+}
+
 void SdCardFontSystem::setupUiFallbacks(GfxRenderer& renderer) {
+  renderer.setUiFallbackAlways(SETTINGS.uiUseReaderFont != 0);
   const std::string& familyName = manager_.currentFamilyName();
   if (familyName.empty()) return;  // no SD family loaded — nothing to fall back to
 
@@ -254,7 +267,8 @@ void SdCardFontSystem::setupUiFallbacks(GfxRenderer& renderer) {
       break;
     }
   }
-  if (!hasFallbackScript) {
+  // With "menus use reader font" the UI sizes are wanted for Latin text too.
+  if (!hasFallbackScript && !SETTINGS.uiUseReaderFont) {
     LOG_DBG("SDFS", "%s has no fallback-script coverage - skipping UI fallback sizes", familyName.c_str());
     return;
   }
@@ -538,6 +552,7 @@ void SdCardFontSystem::addTtfSources(TtfEpdFont& font) {
 
 void SdCardFontSystem::setupTtfUiFallbacks(GfxRenderer& renderer) {
   if (!ttf_ || ttfFamily_.empty()) return;
+  renderer.setUiFallbackAlways(SETTINGS.uiUseReaderFont != 0);
 
   // Small caches: UI strings (titles/rows) are short. Each UI family is a sized
   // variant of ttf_, sharing its FreeType faces without parsing font files or

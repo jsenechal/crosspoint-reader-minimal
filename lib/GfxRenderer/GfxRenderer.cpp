@@ -285,6 +285,16 @@ int GfxRenderer::resolveTextFontId(const int fontId, const char* text, const Epd
   const EpdFontFamily& fallback = fallbackIt->second;
   const char* cursor = text;
   uint32_t cp;
+  if (uiFallbackAlways_) {
+    // Whole string goes to the fallback unless it holds a glyph only the
+    // built-in font can draw (symbols, arrows): then keep it on the built-in.
+    while ((cp = utf8NextCodepoint(reinterpret_cast<const uint8_t**>(&cursor)))) {
+      if (cp >= 0x80 && primary.hasCodepoint(cp, style) && !fallback.hasCodepoint(cp, style)) {
+        return fontId;
+      }
+    }
+    return fallbackFontId;
+  }
   while ((cp = utf8NextCodepoint(reinterpret_cast<const uint8_t**>(&cursor)))) {
     // Redirect whenever the primary font cannot draw a codepoint the fallback
     // can — otherwise the string renders with holes. Not just CJK: Greek,

@@ -17,6 +17,7 @@
 #include "components/themes/BaseTheme.h"
 #include "components/themes/lyra/Lyra3CoversTheme.h"
 #include "components/themes/lyra/LyraTheme.h"
+#include "components/themes/minimal/MinimalTheme.h"
 #include "components/themes/roundedraff/RoundedRaffTheme.h"
 
 UITheme UITheme::instance;
@@ -64,6 +65,17 @@ void UITheme::setTheme(CrossPointSettings::UI_THEME type) {
       currentTheme = std::make_unique<RoundedRaffTheme>();
       currentMetrics = &RoundedRaffMetrics::values;
       break;
+    case CrossPointSettings::UI_THEME::MINIMAL: {
+      auto theme = makeUniqueNoThrow<MinimalTheme>();
+      if (!theme) {
+        LOG_ERR("UI", "OOM: Minimal theme");
+        return;
+      }
+      currentTheme = std::move(theme);
+      currentMetrics = &MinimalMetrics::values;
+      LOG_DBG("UI", "Using Minimal theme");
+      break;
+    }
     case CrossPointSettings::UI_THEME::LYRA_3_COVERS:
       LOG_DBG("UI", "Using Lyra 3 Covers theme");
       currentTheme = std::make_unique<Lyra3CoversTheme>();

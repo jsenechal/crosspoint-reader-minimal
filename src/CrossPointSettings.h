@@ -205,7 +205,7 @@ class CrossPointSettings : public PersistableStore<CrossPointSettings> {
   };
 
   // UI Theme
-  enum UI_THEME { CLASSIC = 0, LYRA = 1, LYRA_3_COVERS = 2, ROUNDEDRAFF = 3, COVER_GRID = 4 };
+  enum UI_THEME { CLASSIC = 0, LYRA = 1, LYRA_3_COVERS = 2, ROUNDEDRAFF = 3, MINIMAL = 4, COVER_GRID = 5 };
 
   // Image rendering in EPUB reader. IMAGES_DISPLAY_BW lays images out like
   // IMAGES_DISPLAY but draws them as a B/W dither, so image pages skip the
@@ -357,6 +357,8 @@ class CrossPointSettings : public PersistableStore<CrossPointSettings> {
   uint8_t longPressMenuFunction = LP_MENU_DISABLED;
   // UI Theme
   uint8_t uiTheme = LYRA;
+  // Menus/UI text use the loaded SD reader font instead of the built-in UI font.
+  uint8_t uiUseReaderFont = 0;
   // Sunlight fading compensation
   uint8_t fadingFix = 0;
   // The fading fix compensates the X4/X3 grayscale waveforms; other boards never get it.
